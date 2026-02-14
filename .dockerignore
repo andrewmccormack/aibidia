@@ -1,0 +1,19 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+.env
+.pytest_cache/
+
+# Docker
+Dockerfile
+docker-compose.yaml
+
+# Build artifacts
+build/
+dist/

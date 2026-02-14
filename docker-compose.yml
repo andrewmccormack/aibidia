@@ -1,0 +1,15 @@
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+      # This 'anonymous volume' tells Docker:
+      # "Do NOT use the .venv from my computer. Use the one in the image."
+      - /app/.venv
+    environment:
+      - FLASK_APP=main.py
+      - FLASK_DEBUG=1
+    # We call python -m flask directly
+    command: python -m flask run --host=0.0.0.0 --port=5000

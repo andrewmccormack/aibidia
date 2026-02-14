@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height: 60vh;">
+  <div class="col-lg-6 col-md-8 col-sm-10">
+    <div class="card shadow-sm">
+      <div class="card-body p-5">
+        <h2 class="card-title text-center mb-4">Upload CSV File</h2>
+        <form action="" method="post" enctype="multipart/form-data">
+          {{ form.csrf_token }}
+          <div class="mb-3">
+            {{ form.csv.label(class="form-label") }}
+            {{ form.csv(class="form-control form-control-lg") }}
+            {% if form.csv.errors %}
+              <div class="text-danger small mt-1">
+                {% for error in form.csv.errors %}
+                  <div>{{ error }}</div>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary btn-lg">Upload</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
