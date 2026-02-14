@@ -1,0 +1,5 @@
+{
+    "user_id": {"type": "integer", "required": true},
+    "email": {"type": "string", "required": true, "regex": "^\\S+@\\S+\\.\\S+$"},
+    "age": {"type": "integer", "min": 0, "max": 120, "required": false}
+}

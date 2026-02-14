@@ -1,11 +1,11 @@
 from pathlib import Path
 from unittest.mock import MagicMock, patch, mock_open
-from app.services.file_writer import LocalFileWriter
+from app.services.file_writer import LocalFileStorage
 
 
 def test_when_writing_a_valid_file():
     data = b"col1,col2\n1,2"
-    file_writer = LocalFileWriter(upload_folder="test/tmp", rename_strategy=None)
+    file_writer = LocalFileStorage(upload_folder="test/tmp", rename_strategy=None)
     uploaded_file = MagicMock(filename="test.csv", mimetype="text/csv")
     uploaded_file.read.return_value = data
     mock_write = mock_open()

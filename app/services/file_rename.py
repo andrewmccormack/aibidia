@@ -8,7 +8,7 @@ class FileRename(Protocol):
 
 
 class AppendDateToFileName(FileRename):
-    def __init__(self, provider: Optional[Callable[[], datetime]]) -> None:
+    def __init__(self, provider: Optional[Callable[[], datetime]] = None) -> None:
         self.provider = provider or datetime.now
 
     def rename(self, file_path: str) -> Path:

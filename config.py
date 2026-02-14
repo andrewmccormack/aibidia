@@ -10,3 +10,4 @@ class Config:
     MAX_FILE_SIZE = 10 * 1024 * 1024
     FILES_ALLOWED = ["csv"]
     UPLOAD_FOLDER = "data/uploads"
+    SCHEMA_FOLDER = "data/schemas"

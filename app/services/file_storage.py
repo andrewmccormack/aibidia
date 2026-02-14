@@ -7,8 +7,9 @@ from mimetypes import guess_type
 from .file_rename import FileRename, PreserveFileName
 
 
-class FileWriter(Protocol):
+class FileStorage(Protocol):
     def save_uploaded_file(self, file: FileStorage) -> Path: ...
+    def resolve_path(self, file_name: str) -> Path: ...
 
 
 def is_valid_csv(file: FileStorage) -> bool:
@@ -20,7 +21,7 @@ def is_valid_csv(file: FileStorage) -> bool:
     return True
 
 
-class LocalFileWriter(FileWriter):
+class LocalFileStorage(FileStorage):
     def __init__(
         self, upload_folder: str, rename_strategy: Optional[FileRename]
     ) -> None:
@@ -36,3 +37,9 @@ class LocalFileWriter(FileWriter):
             data = file.read()
             f.write(data)
             return Path(f.name)
+
+    def resolve_path(self, file_name: str) -> Path:
+        full_path =  self.path / file_name
+        if full_path.exists():
+            return full_path
+        raise FileNotFoundError(f"File {file_name} not found")
