@@ -22,4 +22,4 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-addopts = "--maxfail=1 -v --cov=testing_demo"
+addopts = "--maxfail=1 --cov"
