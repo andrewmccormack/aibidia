@@ -7,15 +7,18 @@ from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 from mimetypes import guess_type
 
+
 class CSVStorage(Protocol):
     def save_uploaded_file(self, file: FileStorage) -> Path: ...
     def resolve_path(self, file_name: str) -> Path: ...
-    def peek(self, file_name: str, rows: int  = 5) -> pd.DataFrame: ...
-    def read_chunk(self, file_name: str, size = 10000) -> pd.DataFrame: ...
+    def peek(self, file_name: str, rows: int = 5) -> pd.DataFrame: ...
+    def read_chunk(self, file_name: str, size=10000) -> pd.DataFrame: ...
     def read_all(self, file_name: str) -> pd.DataFrame: ...
+
 
 class FileRename(Protocol):
     def rename(self, file_path: str) -> Path: ...
+
 
 class AppendDateToFileName(FileRename):
     def __init__(self, provider: Optional[Callable[[], datetime]] = None) -> None:
@@ -25,6 +28,7 @@ class AppendDateToFileName(FileRename):
         file_path = Path(file_path)
         timestamp = self.provider().strftime("%Y%m%d_%H%M%S")
         return file_path.with_name(f"{file_path.stem}_{timestamp}{file_path.suffix}")
+
 
 class PreserveFileName(FileRename):
     def rename(self, file_path: str) -> Path:
@@ -39,7 +43,8 @@ def is_valid_csv(file: CSVStorage) -> bool:
         return False
     return True
 
-def get_encoding(file) -> str :
+
+def get_encoding(file) -> str:
     with open(file, "rb") as f:
         sample = f.read(50000)
         results = charset_normalizer.from_bytes(sample)
@@ -63,17 +68,17 @@ class LocalFileStorage(CSVStorage):
             f.write(data)
             return Path(f.name)
 
-    def peek(self, file_name: str, rows: int  = 5) -> pd.DataFrame:
+    def peek(self, file_name: str, rows: int = 5) -> pd.DataFrame:
         return self._read_csv(file_name, nrows=rows)
 
-    def read_chunk(self, file_name: str, size = 10000) -> pd.DataFrame:
+    def read_chunk(self, file_name: str, size=10000) -> pd.DataFrame:
         return self._read_csv(file_name, chunksize=size)
 
     def read_all(self, file_name: str) -> pd.DataFrame:
         return self._read_csv(file_name)
 
     def resolve_path(self, file_name: str) -> Path:
-        full_path =  self.path / file_name
+        full_path = self.path / file_name
         if full_path.exists():
             return full_path
         raise FileNotFoundError(f"File {file_name} not found")

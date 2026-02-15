@@ -14,6 +14,7 @@ def create_app(config_class=Config):
     init_services(app)
     with app.app_context():
         from app.main import main_blueprint
+
         app.register_blueprint(main_blueprint)
 
     return app

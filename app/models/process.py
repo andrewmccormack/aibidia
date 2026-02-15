@@ -4,9 +4,11 @@ from typing import Self
 from app.models.schema import Schema
 from uuid import UUID
 
+
 class ColumnMappings:
     name: str = field(default="")
     mappings: dict[str, str] = field(default_factory=dict)
+
 
 @dataclass
 class CSVValidationRequest:
@@ -16,10 +18,12 @@ class CSVValidationRequest:
     mappings: dict[str, str] = field(default_factory=dict)
     error_threshold: int = field(default=100)
 
+
 @dataclass
 class CSVValidationError:
     row_numer: int
     error: str
+
 
 @dataclass
 class CSVValidationResponse:
@@ -33,8 +37,15 @@ class CSVValidationResponse:
 
     @classmethod
     def invalid_file(cls, request: CSVValidationRequest) -> Self:
-        return CSVValidationResponse(request_id=request.id, file=request.file, schema=request.schema,
-                                     errors=[CSVValidationError(row_numer=0, error="Could not read file")])
+        return CSVValidationResponse(
+            request_id=request.id,
+            file=request.file,
+            schema=request.schema,
+            errors=[CSVValidationError(row_numer=0, error="Could not read file")],
+        )
+
     @classmethod
     def from_request(self, request: CSVValidationRequest) -> Self:
-        return CSVValidationResponse(request_id=request.id, file=request.file, schema=request.schema)
+        return CSVValidationResponse(
+            request_id=request.id, file=request.file, schema=request.schema
+        )

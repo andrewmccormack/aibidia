@@ -8,7 +8,7 @@ class InspectionResult:
     schema: Schema
     columns: list[str] = field(default_factory=set)
     sample: list[dict] = field(default_factory=list)
-    suggestions: dict[str,str] = field(default_factory=list)
+    suggestions: dict[str, str] = field(default_factory=list)
 
     @property
     def score(self) -> float:

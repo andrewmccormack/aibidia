@@ -41,7 +41,9 @@ def test_is_valid_csv_rejects_non_csv_extension():
 def test_is_valid_csv_rejects_wrong_mime():
     f = MagicMock()
     f.filename = "data.csv"
-    with patch("app.services.csv_storage.guess_type", return_value=("application/json", None)):
+    with patch(
+        "app.services.csv_storage.guess_type", return_value=("application/json", None)
+    ):
         assert is_valid_csv(f) is False
 
 
@@ -67,7 +69,9 @@ def test_save_uploaded_file_with_rename_strategy():
     mock_write = mock_open()
     with patch("builtins.open", mock_write):
         file_writer.save_uploaded_file(uploaded_file)
-        mock_write.assert_called_once_with(Path("test/tmp/input_20220415_090000.csv"), "wb")
+        mock_write.assert_called_once_with(
+            Path("test/tmp/input_20220415_090000.csv"), "wb"
+        )
 
 
 def test_resolve_path_returns_path_when_file_exists(tmp_path):
@@ -105,7 +109,7 @@ def test_read_all_returns_full_dataframe(tmp_path):
 
 def test_read_chunk_returns_iterator_of_chunks(tmp_path):
     csv_path = tmp_path / "chunked.csv"
-    lines = "x,y\n" + "\n".join(f"{i},{i*2}" for i in range(5))
+    lines = "x,y\n" + "\n".join(f"{i},{i * 2}" for i in range(5))
     csv_path.write_text(lines)
     storage = LocalFileStorage(upload_folder=str(tmp_path))
     chunks = storage.read_chunk("chunked.csv", size=2)

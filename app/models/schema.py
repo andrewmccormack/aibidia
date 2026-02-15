@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 import json
 
+
 @dataclass
 class Schema:
     name: str
@@ -9,5 +10,3 @@ class Schema:
 
     def fields(self) -> set[str]:
         return set(self.definition.keys())
-
-

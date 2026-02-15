@@ -25,17 +25,18 @@ class LocalSchemaRepository(SchemaRepository):
                     definition = json.load(jsonfile)
                     yield Schema(file.stem, definition)
                 except (json.JSONDecodeError, UnicodeDecodeError) as e:
-                   logger.warning(f"Error reading file {file.name}: {e}")
-                   continue
+                    logger.warning(f"Error reading file {file.name}: {e}")
+                    continue
 
     def save_schema(self, schema: Schema) -> None:
         with open(self.path / f"{schema.name}.json", "w") as f:
             json.dump(schema.definition, f)
 
+
 class SchemaRegistry:
     def __init__(self, repository: SchemaRepository) -> None:
         self.repository = repository
-        self.schemas = {s.name:s for s in self.repository.get_all_schemas()}
+        self.schemas = {s.name: s for s in self.repository.get_all_schemas()}
 
     def available_schemas(self) -> list[str]:
         return list(self.schemas.keys())
@@ -46,7 +47,3 @@ class SchemaRegistry:
     def register_schema(self, schema: Schema) -> None:
         self.repository.save_schema(schema)
         self.schemas[schema.name] = schema
-
-
-
-

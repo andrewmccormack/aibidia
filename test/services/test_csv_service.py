@@ -37,33 +37,30 @@ def schema_registry() -> SchemaRegistry:
     return SchemaRegistry(MockSchemaRepository())
 
 
-
-
 def test_suggestions_are__mappings_with_headers():
     """Verifies that exact/normalized name matching works first."""
-    df = pd.DataFrame({
-        "User Email": ["test@example.com"],
-        "transaction_amount": [100]
-    })
+    df = pd.DataFrame({"User Email": ["test@example.com"], "transaction_amount": [100]})
     expected = {"User Email": "user_email", "transaction_amount": "transaction_amount"}
     suggestions = get_suggested_columns_mappings(df, schema)
     assert suggestions == expected
 
+
 def test_can_make_suggestions_when_the_dataframe_has_no_headers():
-    df = pd.DataFrame([
-        ["bob@aibidia.com", 50, "2026-01-01"],
-        ["alice@taxtech.fi", 75, "2026-01-02"]
-    ])
-    expected = {"0": "user_email", "1": "transaction_amount", "2": None }
+    df = pd.DataFrame(
+        [["bob@aibidia.com", 50, "2026-01-01"], ["alice@taxtech.fi", 75, "2026-01-02"]]
+    )
+    expected = {"0": "user_email", "1": "transaction_amount", "2": None}
     suggestions = get_suggested_columns_mappings(df, schema)
     assert suggestions == expected
 
 
 def test_suggest_mappings_with_empty_values():
-    df = pd.DataFrame({
-        "col_a": [None, "a@b.vom", "charles@example.com", None],
-        "col_b": [10, 20, None, 40]
-    })
+    df = pd.DataFrame(
+        {
+            "col_a": [None, "a@b.vom", "charles@example.com", None],
+            "col_b": [10, 20, None, 40],
+        }
+    )
     expected = {"col_a": "user_email", "col_b": "transaction_amount"}
     suggestions = get_suggested_columns_mappings(df, schema, threshold=0.1)
     assert suggestions == expected
@@ -101,10 +98,12 @@ def test_guess_by_content_matches_float_column():
 
 
 def test_inspect_returns_inspection_result_with_columns_and_suggestions():
-    df = pd.DataFrame({
-        "User Email": ["test@example.com"],
-        "transaction_amount": [100.0],
-    })
+    df = pd.DataFrame(
+        {
+            "User Email": ["test@example.com"],
+            "transaction_amount": [100.0],
+        }
+    )
     result = inspect_csv(df, schema)
     assert result.schema == schema
     assert result.columns == ["User Email", "transaction_amount"]
@@ -139,18 +138,25 @@ def test_upload_file_returns_saved_file_name(schema_registry, mock_csv_storage):
 def test_validate_valid_csv_returns_no_errors(schema_registry, mock_csv_storage):
     import uuid
     from datetime import date
-    valid_df = pd.DataFrame({
-        "user_email": ["a@b.com", "b@c.com"],
-        "transaction_amount": [10.0, 20.0],
-        "signup_date": [date(2026, 1, 1), date(2026, 1, 2)],
-    })
+
+    valid_df = pd.DataFrame(
+        {
+            "user_email": ["a@b.com", "b@c.com"],
+            "transaction_amount": [10.0, 20.0],
+            "signup_date": [date(2026, 1, 1), date(2026, 1, 2)],
+        }
+    )
     mock_csv_storage.read_chunk.return_value = iter([valid_df])
     service = CSVServiceImpl(mock_csv_storage, schema_registry)
     request = CSVValidationRequest(
         id=uuid.uuid4(),
         file="test.csv",
         schema="test",
-        mappings={"user_email": "user_email", "transaction_amount": "transaction_amount", "signup_date": "signup_date"},
+        mappings={
+            "user_email": "user_email",
+            "transaction_amount": "transaction_amount",
+            "signup_date": "signup_date",
+        },
     )
     response = service.validate(request)
     assert response.is_valid()
@@ -159,26 +165,36 @@ def test_validate_valid_csv_returns_no_errors(schema_registry, mock_csv_storage)
 
 def test_validate_invalid_csv_appends_errors(schema_registry, mock_csv_storage):
     import uuid
-    invalid_df = pd.DataFrame({
-        "user_email": ["not-an-email", "bad"],
-        "transaction_amount": [-1, 5],  # -1 fails min
-        "signup_date": ["2026-01-01", "2026-01-02"],
-    })
+
+    invalid_df = pd.DataFrame(
+        {
+            "user_email": ["not-an-email", "bad"],
+            "transaction_amount": [-1, 5],  # -1 fails min
+            "signup_date": ["2026-01-01", "2026-01-02"],
+        }
+    )
     mock_csv_storage.read_chunk.return_value = iter([invalid_df])
     service = CSVServiceImpl(mock_csv_storage, schema_registry)
     request = CSVValidationRequest(
         id=uuid.uuid4(),
         file="test.csv",
         schema="test",
-        mappings={"user_email": "user_email", "transaction_amount": "transaction_amount", "signup_date": "signup_date"},
+        mappings={
+            "user_email": "user_email",
+            "transaction_amount": "transaction_amount",
+            "signup_date": "signup_date",
+        },
     )
     response = service.validate(request)
     assert not response.is_valid()
     assert len(response.errors) >= 1
 
 
-def test_validate_invalid_file_returns_invalid_file_response(schema_registry, mock_csv_storage):
+def test_validate_invalid_file_returns_invalid_file_response(
+    schema_registry, mock_csv_storage
+):
     import uuid
+
     mock_csv_storage.read_chunk.return_value = None
     service = CSVServiceImpl(mock_csv_storage, schema_registry)
     request = CSVValidationRequest(
@@ -193,10 +209,12 @@ def test_validate_invalid_file_returns_invalid_file_response(schema_registry, mo
 
 
 def test_inspect_returns_inspection_result_from_peek(schema_registry, mock_csv_storage):
-    df = pd.DataFrame({
-        "User Email": ["a@b.com"],
-        "transaction_amount": [1.0],
-    })
+    df = pd.DataFrame(
+        {
+            "User Email": ["a@b.com"],
+            "transaction_amount": [1.0],
+        }
+    )
     mock_csv_storage.peek.return_value = df
     service = CSVServiceImpl(mock_csv_storage, schema_registry)
     result = service.inspect("some.csv", "test", sample_size=5)
@@ -212,11 +230,15 @@ def test_inspect_raises_when_file_not_found(schema_registry, mock_csv_storage):
         service.inspect("missing.csv", "test")
 
 
-def test_recommend_schema_returns_schema_above_threshold(schema_registry, mock_csv_storage):
-    df = pd.DataFrame({
-        "User Email": ["a@b.com"],
-        "transaction_amount": [1.0],
-    })
+def test_recommend_schema_returns_schema_above_threshold(
+    schema_registry, mock_csv_storage
+):
+    df = pd.DataFrame(
+        {
+            "User Email": ["a@b.com"],
+            "transaction_amount": [1.0],
+        }
+    )
     mock_csv_storage.peek.return_value = df
     service = CSVServiceImpl(mock_csv_storage, schema_registry)
     recommended = service.recommend_schema("file.csv", threshold=0.5)
@@ -224,7 +246,9 @@ def test_recommend_schema_returns_schema_above_threshold(schema_registry, mock_c
     assert recommended.name == "test"
 
 
-def test_recommend_schema_returns_default_when_below_threshold(schema_registry, mock_csv_storage):
+def test_recommend_schema_returns_default_when_below_threshold(
+    schema_registry, mock_csv_storage
+):
     df = pd.DataFrame({"unknown_col": ["a", "b", "c"]})
     mock_csv_storage.peek.return_value = df
     service = CSVServiceImpl(mock_csv_storage, schema_registry)
