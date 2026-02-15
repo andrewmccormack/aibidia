@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Protocol, Generator, Optional
+from typing import Iterator, Protocol, Optional
 from app.models.schema import Schema
 import json
 import logging
@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class SchemaRepository(Protocol):
-    def get_all_schemas(self) -> Generator[Schema]: ...
+    def get_all_schemas(self) -> Iterator[Schema]: ...
     def save_schema(self, schema: Schema) -> None: ...
 
 
@@ -18,7 +18,7 @@ class LocalSchemaRepository(SchemaRepository):
         if not self.path.exists():
             self.path.mkdir(parents=True)
 
-    def get_all_schemas(self) -> Generator[Schema]:
+    def get_all_schemas(self) -> Iterator[Schema]:
         for file in self.path.glob("*.json"):
             with open(file) as jsonfile:
                 try:
