@@ -1,0 +1,14 @@
+{% if available_schemas is defined and available_schemas %}
+    <div class="mb-4">
+        <label class="form-label fw-semibold">Target schema</label>
+        <select class="form-select form-select-sm w-auto" onchange="window.location.href=this.value">
+            {% for s in available_schemas %}
+            <option value="{{ url_for('main.map_columns', filename=filename, schema=s) }}"
+                    {% if selected_schema is defined and s == selected_schema %}selected{% endif %}>
+                {{ s }}
+            </option>
+            {% endfor %}
+        </select>
+        <small class="text-muted">Changing the schema reloads the page with new target fields.</small>
+    </div>
+{% endif %}

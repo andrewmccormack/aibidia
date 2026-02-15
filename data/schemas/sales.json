@@ -2,7 +2,7 @@
     "sales_person": {"type": "string", "required": true},
     "country": {"type": "string", "required": true },
     "product": {"type": "string", "required": true },
-    "date": {"type": "date", "required": true },
+    "date": {"type": "string", "required": true },
     "amount": {"type": "string", "required": true },
     "boxes_shipped": {"type": "integer", "required": true }
 }

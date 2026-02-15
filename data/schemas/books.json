@@ -1,0 +1,12 @@
+{
+    "book_name": {"type": "string", "required": true},
+    "author": {"type": "string", "required": true },
+    "rating": {"type": "string", "required": true},
+    "form" : {"type": "string", "required": true, "allowed": ["Hardcover", "Paperback", "Board book"]},
+    "price": {"type": "string", "required": true},
+    "genre": {"type": "string", "required": true },
+    "reviews_count": {"type": "integer", "required": true },
+    "publishing_date": {"type": "string", "required": true},
+    "reading_age": {"type": "string", "required": false },
+    "print_length": {"type": "float", "required": true }
+}

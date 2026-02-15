@@ -7,78 +7,11 @@
             <h4 class="mb-0">Step 2: Map Your Columns</h4>
         </div>
         <div class="card-body">
+            {% include "partials/_schema_switcher.html" %}
             <p class="text-muted">We've suggested mappings based on your headers. Please verify them before processing the full 100MB file.</p>
-
-            <div class="mb-4">
-                <h6><i class="bi bi-eye"></i> Data Preview (First 5 Rows)</h6>
-                <div class="table-responsive border rounded" style="max-height: 200px;">
-                    <table class="table table-sm table-striped mb-0" style="font-size: 0.85rem;">
-                        <thead class="table-dark">
-                            <tr>
-                                {% for col in columns %}
-                                <th>{{ col }}</th>
-                                {% endfor %}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for row in sample %}
-                            <tr>
-                                {% for col in columns %}
-                                <td>{{ row[col] }}</td>
-                                {% endfor %}
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
+            {% include "partials/_preview_table.html" %}
             <hr>
-
-            <form action="{{ url_for('main.process_file', filename=filename) }}" method="POST">
-                <table class="table align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th>CSV Column</th>
-                            <th>Sample Data</th>
-                            <th>Target Schema Field</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for col in columns %}
-                        <tr>
-                            <td><strong>{{ col }}</strong></td>
-                            <td>
-                                <code class="text-secondary">{{ sample[0][col] if sample else 'N/A' }}</code>
-                            </td>
-                            <td>
-                                <select name="map_{{ col }}" class="form-select">
-                                    <option value="">-- Ignore Column --</option>
-                                    {% for field in schema_fields %}
-                                        <option value="{{ field }}"
-                                            {% if suggestions.get(col) == field %} selected {% endif %}>
-                                            {{ field | replace('_', ' ') | title }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-
-                <div class="d-flex justify-content-between mt-4">
-                    <div class="form-check pt-2">
-                        <input class="form-check-input" type="checkbox" name="save_template" id="saveTemplate">
-                        <label class="form-check-label" for="saveTemplate">
-                            Save these mappings for future files
-                        </label>
-                    </div>
-                    <button type="submit" class="btn btn-success btn-lg">
-                        Process 100MB File
-                    </button>
-                </div>
-            </form>
+            {% include "partials/_mapping_form.html" %}
         </div>
     </div>
 </div>

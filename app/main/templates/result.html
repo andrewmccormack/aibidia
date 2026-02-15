@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-header {{ 'bg-success' if result.is_valid() else 'bg-danger' }} text-white">
+            <h4 class="mb-0">
+                {{ 'Validation passed' if result.is_valid() else 'Validation failed' }}
+            </h4>
+        </div>
+        <div class="card-body">
+            <p class="mb-1"><strong>File:</strong> {{ result.file }}</p>
+            <p class="mb-1"><strong>Schema:</strong> {{ result.schema }}</p>
+            <p class="mb-3 text-muted small">Request ID: {{ result.request_id }}</p>
+
+            {% if result.is_valid() %}
+                <p class="text-success mb-0">No errors found.</p>
+            {% else %}
+                <p><strong>Errors ({{ result.errors|length }}):</strong></p>
+                <div class="table-responsive">
+                    <table class="table table-sm table-striped">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Row</th>
+                                <th>Error</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for err in result.errors %}
+                            <tr>
+                                <td>{{ err.row_numer }}</td>
+                                <td><code>{{ err.error }}</code></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+
+            <hr>
+            <a href="{{ url_for('main.index') }}" class="btn btn-primary">Upload another file</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

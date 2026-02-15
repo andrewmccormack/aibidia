@@ -1,0 +1,38 @@
+<form action="{{ url_for('main.process_file', filename=filename) }}" method="POST">
+    {{ form.hidden_tag() }}
+    <table class="table align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>CSV Column</th>
+                <th>Sample Data</th>
+                <th>Target Schema Field</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in form.mappings %}
+            <tr>
+                <td>
+                    <strong>{{ entry.csv_column.data }}</strong>
+                    {{ entry.csv_column() }}
+                </td>
+                <td>
+                    <code class="text-secondary">
+                        {{ sample[0][entry.csv_column.data] if sample else 'N/A' }}
+                    </code>
+                </td>
+                <td>{{ entry.schema_field(class="form-select") }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-between mt-4">
+        <div class="form-check pt-2">
+            {{ form.save_template(class="form-check-input") }}
+            <label class="form-check-label" for="{{ form.save_template.id }}">
+                {{ form.save_template.label.text }}
+            </label>
+        </div>
+
+        {{ form.submit(class="btn btn-primary btn-lg") }}
+    </div>
+</form>
