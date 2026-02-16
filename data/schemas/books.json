@@ -7,6 +7,5 @@
     "genre": {"type": "string", "required": true },
     "reviews_count": {"type": "integer", "required": true },
     "publishing_date": {"type": "string", "required": true},
-    "reading_age": {"type": "string", "required": false },
     "print_length": {"type": "float", "required": true }
 }

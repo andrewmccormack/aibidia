@@ -23,7 +23,7 @@ def index():
     if form.validate_on_submit():
         try:
             saved_file = current_app.csv_service.upload_file(form.csv.data)
-            flash(f"File {saved_file} successfully uploaded.")
+            flash(f"File {saved_file} successfully uploaded.", "success")
             return redirect(url_for("main.map_columns", filename=saved_file))
         except Exception as e:
             flash(f"Error uploading file: {e}", "error")

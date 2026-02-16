@@ -11,7 +11,7 @@ class Config:
     FILES_ALLOWED = ["csv"]
     UPLOAD_FOLDER = "data/uploads"
     SCHEMA_FOLDER = "data/schemas"
-
+    WTF_CSRF_TRUSTED_ORIGINS = ['http://localhost:5000', 'http://127.0.0.1:5000']
     # Flask-WTF: allow HTTP in dev/Docker (no HTTPS); avoids 403 on form submit
     WTF_CSRF_SSL_STRICT = False
     # Optional: set WTF_CSRF_ENABLED=0 in env to disable CSRF (e.g. local/Docker only)

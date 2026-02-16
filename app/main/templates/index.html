@@ -6,13 +6,23 @@
     <div class="card shadow-sm">
       <div class="card-body p-5">
         <h2 class="card-title text-center mb-4">Upload CSV File</h2>
-        <form action="" method="post" enctype="multipart/form-data">
+        <form action="" method="post" enctype="multipart/form-data" id="upload-form">
           {{ form.csrf_token }}
           <div class="mb-3">
             {{ form.csv.label(class="form-label") }}
-            {{ form.csv(class="form-control form-control-lg") }}
+            <div class="upload-zone position-relative border border-2 border-secondary border-dashed rounded-3 p-4 text-center bg-light" id="upload-zone" role="button" tabindex="0" aria-label="Drop CSV file here or click to browse">
+              {{ form.csv(accept=".csv,text/csv,application/csv,text/comma-separated-values", class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer") }}
+              <div id="upload-prompt" class="text-muted position-relative">
+                <span class="d-block mb-2">Drag and drop your CSV here, or <strong>click to browse</strong></span>
+                <small>CSV files only, max 10 MB</small>
+              </div>
+              <div id="file-preview" class="d-none position-relative">
+                <span class="d-block mb-1 text-success fw-medium" id="file-name"></span>
+                <small class="text-muted">Click the zone or choose another file</small>
+              </div>
+            </div>
             {% if form.csv.errors %}
-              <div class="text-danger small mt-1">
+              <div class="text-danger small mt-2">
                 {% for error in form.csv.errors %}
                   <div>{{ error }}</div>
                 {% endfor %}
@@ -20,11 +30,66 @@
             {% endif %}
           </div>
           <div class="d-grid">
-            <button type="submit" class="btn btn-primary btn-lg">Upload</button>
+            <button type="submit" class="btn btn-primary btn-lg" id="submit-btn" disabled>Upload</button>
           </div>
         </form>
       </div>
     </div>
   </div>
 </div>
+
+<style>
+  .upload-zone.dragover { border-color: var(--bs-primary) !important; background-color: rgba(var(--bs-primary-rgb), 0.08) !important; }
+  .upload-zone .cursor-pointer { cursor: pointer; }
+</style>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+(function () {
+  var zone = document.getElementById('upload-zone');
+  var input = document.getElementById('csv');
+  var prompt = document.getElementById('upload-prompt');
+  var preview = document.getElementById('file-preview');
+  var fileName = document.getElementById('file-name');
+  var submitBtn = document.getElementById('submit-btn');
+
+  function updateUI(file) {
+    if (file) {
+      fileName.textContent = file.name;
+      prompt.classList.add('d-none');
+      preview.classList.remove('d-none');
+      submitBtn.disabled = false;
+    } else {
+      prompt.classList.remove('d-none');
+      preview.classList.add('d-none');
+      submitBtn.disabled = true;
+    }
+  }
+
+  zone.addEventListener('click', function () { input.click(); });
+  zone.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); input.click(); }
+  });
+
+  ['dragenter', 'dragover'].forEach(function (ev) {
+    zone.addEventListener(ev, function (e) { e.preventDefault(); zone.classList.add('dragover'); });
+  });
+  ['dragleave', 'drop'].forEach(function (ev) {
+    zone.addEventListener(ev, function (e) {
+      e.preventDefault();
+      zone.classList.remove('dragover');
+      if (ev === 'drop' && e.dataTransfer.files.length) {
+        input.files = e.dataTransfer.files;
+        updateUI(e.dataTransfer.files[0]);
+      }
+    });
+  });
+
+  input.addEventListener('change', function () { updateUI(this.files[0] || null); });
+  updateUI(input.files[0] || null);
+})();
+</script>
 {% endblock %}
