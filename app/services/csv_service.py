@@ -28,13 +28,15 @@ class CsvService(Protocol):
 
 
 def guess_by_content(
-    sample: list, schema: Schema, threshold: float = 0.8
+    sample: list, schema: Schema, suggestions: dict[str, str], threshold: float = 0.8
 ) -> str | None:
     validator = Validator(schema.definition, allow_unknown=True)
     if sample is None:
         return None
 
     for field_name, rules in schema.definition.items():
+        if field_name in suggestions.values():
+            continue
         match_count = 0
         for value in sample:
             if validator.validate({field_name: value}, {field_name: rules}):
@@ -59,15 +61,15 @@ def get_suggested_columns_mappings(
             suggestions[key] = normalized
             continue
 
-        suggestions[key] = guess_by_content(sample[col], schema, threshold)
+        suggestions[key] = guess_by_content(sample[col], schema, suggestions, threshold)
 
     return suggestions
 
 
 def inspect(df: DataFrame, schema: Schema) -> InspectionResult:
+    df.columns = df.columns.astype(str)
     columns = [str(col) for col in df.columns]
     sample = df.to_dict(orient="records")
-    schema_fields = schema.definition.keys()
     suggestions = get_suggested_columns_mappings(df, schema)
     return InspectionResult(schema, columns, sample, suggestions)
 
@@ -95,6 +97,7 @@ class CSVServiceImpl(CsvService):
 
         response = CSVValidationResponse.from_request(request)
         for chunk in chunks:
+            chunk.columns = chunk.columns.astype(str)
             chunk = chunk.rename(columns=request.mappings)
             records = chunk.to_dict("records")
             offset = chunk.index[0]

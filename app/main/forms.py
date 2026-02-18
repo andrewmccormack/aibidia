@@ -18,7 +18,9 @@ MAX_FILE_SIZE = current_app.config["MAX_FILE_SIZE"]
 class UploadForm(FlaskForm):
     csv = FileField(
         "CSV File",
-        validators=[FileRequired(), FileSize(MAX_FILE_SIZE), FileAllowed(["csv"])],
+        validators=[FileRequired(message="Please upload a valid CSV file to continue"),
+                    FileSize(MAX_FILE_SIZE, message="File can be no larger than 100MB"),
+                    FileAllowed(["csv"])],
     )
 
 

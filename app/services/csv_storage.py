@@ -1,3 +1,4 @@
+import csv
 from datetime import datetime
 import charset_normalizer
 from typing import Protocol, Optional, Callable
@@ -50,6 +51,13 @@ def get_encoding(file) -> str:
         results = charset_normalizer.from_bytes(sample)
         return str(results.best().encoding) if results.best() else "utf-8"
 
+def has_header(file, encoding='utf-8', sample_size=1024) -> bool:
+        """Detect if CSV has a header row using csv.Sniffer"""
+        with open(file, 'r', encoding=encoding) as f:
+            sample = f.read(sample_size)
+            sniffer = csv.Sniffer()
+            return sniffer.has_header(sample)
+
 
 class LocalFileStorage(CSVStorage):
     def __init__(
@@ -86,4 +94,5 @@ class LocalFileStorage(CSVStorage):
     def _read_csv(self, file_name: str, **kwargs) -> pd.DataFrame:
         resolved_path = self.resolve_path(file_name)
         encoding = get_encoding(resolved_path)
-        return pd.read_csv(resolved_path, encoding=encoding, **kwargs)
+        header = 'infer' if has_header(resolved_path, encoding=encoding) else None
+        return pd.read_csv(resolved_path, encoding=encoding, header=header, **kwargs)
