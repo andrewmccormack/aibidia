@@ -7,7 +7,7 @@
       <div class="card-body p-5">
         <h2 class="card-title text-center mb-4">Upload CSV File</h2>
         <form action="" method="post" enctype="multipart/form-data" id="upload-form">
-          {{ form.csrf_token }}
+          {{ form.hidden_tag() }}
           <div class="mb-3">
             {{ form.csv.label(class="form-label") }}
             <div class="upload-zone position-relative border border-2 border-secondary border-dashed rounded-3 p-4 text-center bg-light" id="upload-zone" role="button" tabindex="0" aria-label="Drop CSV file here or click to browse">
